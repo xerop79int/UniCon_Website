@@ -15,7 +15,6 @@ export default function Comments(props){
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const [parent, setParent] = useState("");
-  const [likes, setLikes] = useState([]);
 
   useEffect(() => {
     let URL = `http://127.0.0.1:8000/paper/${props.paper}/comments`;
@@ -29,19 +28,6 @@ export default function Comments(props){
         })
         .catch(err => console.log(err))
   }, []);
-
-  // useEffect(() => {
-  //   let URL = `http://127.0.0.1:8000/review/1/all`;
-
-  //   axios.get(URL, {
-  //     headers: { Authorization: `Token ${localStorage.getItem('token')}` },
-  //   })
-  //       .then(res => {
-  //         console.log(res.data.data)
-  //         setLikes(res.data.data)
-  //       })
-  //       .catch(err => console.log(err))
-  // }, []);
 
 
   const handleSubmit = (e) => {
@@ -60,7 +46,7 @@ export default function Comments(props){
         .then(res => {
           setComment("");
           setParent("");
-          let commentarea = document.querySelector(".comment-area");
+          let commentarea = document.querySelector("#comment-area");
           commentarea.value = "";
           setComments(res.data.comments)
         })
@@ -71,7 +57,7 @@ export default function Comments(props){
       console.log(id)
       e.preventDefault();
       setParent(id);
-      let commentarea = document.querySelector(".comment-area");
+      let commentarea = document.querySelector("#comment-area");
       commentarea.focus();
       commentarea.scrollIntoView();
     }
@@ -83,9 +69,15 @@ export default function Comments(props){
         headers: { Authorization: `Token ${localStorage.getItem('token')}` },
       })
           .then(res => {
-            console.log(res.data)
-          })
-          .catch(err => console.log(err))
+            let URL = `http://127.0.0.1:8000/paper/${props.paper}/comments`;
+            axios.get(URL, {
+              headers: { Authorization: `Token ${localStorage.getItem('token')}` },
+            })
+                .then(res => {
+                  setComments(res.data)
+                })
+                .catch(err => console.log(err))
+              })
     }
 
 
@@ -110,16 +102,16 @@ export default function Comments(props){
 
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex align-items-center">
-                        <a href="#!" className="link-muted me-2">
+                        <a onClick={e => handlelikes(e, comment.id, 'like')} className="link-muted me-2">
                           <MDBIcon fas icon="thumbs-up me-1" />
                           {comment.likes}
                         </a>
-                        <a href="#!" className="link-muted">
+                        <a onClick={e => handlelikes(e, comment.id, 'unlike')} className="link-muted">
                           <MDBIcon fas icon="thumbs-down me-1" />
                           {comment.unlikes}
                         </a>
                       </div>
-                      <a href="#!" className="link-muted">
+                      <a onClick={e => handleParent(e, comment.id)} className="link-muted">
                         <MDBIcon fas icon="reply me-1" /> Reply
                       </a>
                     </div>
@@ -128,7 +120,7 @@ export default function Comments(props){
               </MDBCard>
             </div>
             {comment.children.map((child) => (
-            <div style={{marginLeft: "3rem"}} className="d-flex flex-start mb-4">
+            <div key={child.id} style={{marginLeft: "3rem"}} className="d-flex flex-start mb-4">
 
               <MDBCard className=" w-100">
                 <MDBCardBody className="p-4">
@@ -141,16 +133,16 @@ export default function Comments(props){
 
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex align-items-center">
-                        <a href="#!" className="link-muted me-2">
+                        <a onClick={e => handlelikes(e, child.id, 'like')} className="link-muted me-2">
                           <MDBIcon fas icon="thumbs-up me-1" />
                           {child.likes}
                         </a>
-                        <a href="#!" className="link-muted">
+                        <a onClick={e => handlelikes(e, child.id, 'unlike')} className="link-muted">
                           <MDBIcon fas icon="thumbs-down me-1" />
                           {child.unlikes}
                         </a>
                       </div>
-                      <a href="#!" className="link-muted">
+                      <a onClick={e => handleParent(e, comment.id)} className="link-muted">
                         <MDBIcon fas icon="reply me-1" /> Reply
                       </a>
                     </div>
@@ -162,6 +154,22 @@ export default function Comments(props){
           </MDBCol>
         </MDBRow>
         ))}
+
+        <div className="card-footer py-3 border-0" style={{maxWidth: '1000px', height: '200px', margin: '0 auto', backgroundColor: '#f8f9fa'}}>
+            <div className="d-flex flex-start mt-3 w-100" >
+              <img className="rounded-circle shadow-1-strong me-3"
+                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" alt="avatar" width="40"
+                height="40" />
+              <div className="form-outline w-100">
+                <textarea onChange={(e) => setComment(e.target.value)} className="form-control" id="comment-area" rows="4"
+                  style={{background: '#fff', border: "1px solid rgba(0,0,0,0.1)"}}></textarea>
+                <label className="form-label" >Message</label>
+              </div>
+            </div>
+            <div className="float-end mt-2 pt-1">
+              <button type="button" onClick={handleSubmit} className="btn btn-primary btn-sm">Post comment</button>
+            </div>
+          </div>
       </MDBContainer>
     </section>
     )

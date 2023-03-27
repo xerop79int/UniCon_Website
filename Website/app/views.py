@@ -429,11 +429,9 @@ class ManagerCommentLikeView(APIView):
                 notification.save()
                 
 
-                likes = Like.objects.filter(post=comment, value='Like')
-                unlikes = Like.objects.filter(post=comment, value='Unlike')
-                count_like = likes.count()
-                count_unlike = unlikes.count()
-                data = {'likes': count_like, 'unlikes': count_unlike}
+                likes = Like.objects.filter(post=comment, value='Like').count()
+                unlikes = Like.objects.filter(post=comment, value='Unlike').count()
+                data = {'likes': likes, 'unlikes': unlikes}
                 return Response({'success': 'Comment liked successfully.', 'data': data})
         elif data == 'unlike':
             comment = Comments.objects.get(id=comment)
@@ -469,9 +467,7 @@ class ManagerCommentLikeView(APIView):
 
                 likes = Like.objects.filter(post=comment, value='Like').count()
                 unlikes = Like.objects.filter(post=comment, value='Unlike').count()
-                count_like = likes.count()
-                count_unlike = unlikes.count()
-                data = {'likes': count_like, 'unlikes': count_unlike}
+                data = {'likes': likes, 'unlikes': unlikes}
                 return Response({'success': 'Comment liked successfully.', 'data': data})
 
 

@@ -4,10 +4,11 @@ import {
   MDBContainer,
   MDBBtn,
   MDBRow,
-  MDBCol,
+  MDBCol
 } from 'mdb-react-ui-kit';
 import Comments from './Comments';
 import Navbar from './Navbar';
+import './ResearchPaper.css'
 
 function ResearchPaper() {
     const { Venue_name, Paper } = useParams();
@@ -68,6 +69,18 @@ function ResearchPaper() {
                       <p className='text-muted'>
                         <span className='fw-bold'>Public Data: </span>{paper.Public_date}
                       </p>
+                      <div class="rate">
+                        <input type="radio" id="star5" name="rate" value="5" />
+                        <label for="star5" title="text">5 stars</label>
+                        <input type="radio" id="star4" name="rate" value="4" />
+                        <label for="star4" title="text">4 stars</label>
+                        <input type="radio" id="star3" name="rate" value="3" />
+                        <label for="star3" title="text">3 stars</label>
+                        <input type="radio" id="star2" name="rate" value="2" />
+                        <label for="star2" title="text">2 stars</label>
+                        <input type="radio" id="star1" name="rate" value="1" />
+                        <label for="star1" title="text">1 star</label>
+                      </div>
                       <a style={{color: "white"}} href={paper.Research_Paper_file}><MDBBtn className='w-100 mb-3' size='md'>Download Paper PDF</MDBBtn></a>
                       <a style={{color: "white"}} href={"/chat/"+paper.Research_Paper_name}><MDBBtn className='w-100 mb-3' size='md'>Community Talk</MDBBtn></a>
                   </MDBRow>

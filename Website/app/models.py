@@ -44,6 +44,7 @@ class ResearchPaper(models.Model):
     Visibility = models.CharField(max_length=10, choices=visibility, default='public')
     Code = models.CharField(max_length=100, null=True, blank=True)
     Abstract = models.TextField(null=True, blank=True)
+    rating = models.IntegerField(default=0)
 
     def __str__(self) -> str:
         return self.Research_Paper_name

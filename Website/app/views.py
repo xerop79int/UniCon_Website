@@ -312,7 +312,6 @@ class ManagerCommentsView(APIView):
         paper = ResearchPaper.objects.get(Research_Paper_name=paper)
         comments = Comments.objects.filter(ResearchPaper=paper)
         sort = req.GET.get('sort')
-        print(sort)
 
         def get_nested_comments(comment):
             nested_comments = []

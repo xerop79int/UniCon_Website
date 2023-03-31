@@ -252,14 +252,22 @@ class ManagerCommentsView(APIView):
 
     def post(self, req, paper):
         user = req.user
-        comment = req.data.get('comment')
+        comment_string = req.data.get('comment')
         paper = req.data.get('paper')
         parent_comment = req.data.get('parent')
-        paper = ResearchPaper.objects.get(Research_Paper_name=paper)
-        if parent_comment != None:
-            parent_comment = Comments.objects.get(id=parent_comment)
-        comment = Comments.objects.create(User=user, Comment=comment, ResearchPaper=paper, parent_comment=parent_comment)
-        comment.save()
+        edit = req.data.get('edit')
+        if edit != None:
+            comment = Comments.objects.get(id=edit)
+            comment.Comment = comment_string
+            comment.save()
+            paper = ResearchPaper.objects.get(Research_Paper_name=paper)
+        else:
+            paper = ResearchPaper.objects.get(Research_Paper_name=paper)
+            if parent_comment != None:
+                parent_comment = Comments.objects.get(id=parent_comment)
+            comment = Comments.objects.create(User=user, Comment=comment_string, ResearchPaper=paper, parent_comment=parent_comment)
+            comment.save()
+        
         comments = Comments.objects.filter(ResearchPaper=paper)
 
         def get_nested_comments(comment):
@@ -275,6 +283,7 @@ class ManagerCommentsView(APIView):
                     'visibility': child.Visibility,
                     'likes': likes,
                     'unlikes': unlikes,
+                    'personal': child.User == user,
                     'children': get_nested_comments(child)
                 })
             return nested_comments
@@ -291,6 +300,7 @@ class ManagerCommentsView(APIView):
                 'visibility': comment.Visibility,
                 'likes': likes,
                 'unlikes': unlikes,
+                'personal': comment.User == user,
                 'children': get_nested_comments(comment)
             })
 
@@ -315,6 +325,7 @@ class ManagerCommentsView(APIView):
                     'visibility': child.Visibility,
                     'likes': likes,
                     'unlikes': unlikes,
+                    'personal': child.User == req.user,
                     'children': get_nested_comments(child)
                 })
             return nested_comments
@@ -331,6 +342,7 @@ class ManagerCommentsView(APIView):
                 'visibility': comment.Visibility,
                 'likes': likes,
                 'unlikes': unlikes,
+                'personal': comment.User == req.user,
                 'children': get_nested_comments(comment)
             })
 

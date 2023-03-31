@@ -9,12 +9,14 @@ import {
   MDBRow,
   MDBTypography,
 } from "mdb-react-ui-kit";
+import { MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem, MDBBtn } from 'mdb-react-ui-kit';
 
 export default function Comments(props){
 
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const [parent, setParent] = useState("");
+  const [edit, setEdit] = useState("");
 
   useEffect(() => {
     let URL = `http://127.0.0.1:8000/paper/${props.paper}/comments`;
@@ -38,6 +40,9 @@ export default function Comments(props){
     if (parent) {
       form_data.append('parent', parent);
     }
+    if (edit) {
+      form_data.append('edit', edit);
+    }
 
     let URL = `http://127.0.0.1:8000/paper/${props.paper}/comments`;
     axios.post(URL, form_data, {
@@ -52,6 +57,15 @@ export default function Comments(props){
         })
         .catch(err => console.log(err))
     };
+
+    const handleEdit = (e, id, comment) => {
+      e.preventDefault();
+      setEdit(id);
+      let commentarea = document.querySelector("#comment-area");
+      commentarea.scrollIntoView();
+      commentarea.value = comment;
+      commentarea.focus();
+    }
 
     const handleParent = (e, id) => {
       console.log(id)
@@ -141,6 +155,16 @@ export default function Comments(props){
                           <MDBIcon fas icon="thumbs-down me-1" />
                           {child.unlikes}
                         </a>
+                        { child.personal ? 
+                        <MDBDropdown className='m-2'>
+                          <MDBDropdownToggle>...</MDBDropdownToggle>
+                          <MDBDropdownMenu>
+                            <MDBDropdownItem onClick={e => handleEdit(e, child.id, child.comment)} link>Edit</MDBDropdownItem>
+                            <MDBDropdownItem link>Delete</MDBDropdownItem>
+                          </MDBDropdownMenu>
+                        </MDBDropdown>
+                        : null
+                        }
                       </div>
                       <a onClick={e => handleParent(e, comment.id)} className="link-muted">
                         <MDBIcon fas icon="reply me-1" /> Reply

@@ -16,7 +16,7 @@ from django.http import JsonResponse
 from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
-import datetime
+from operator import itemgetter
 
 # Create your views here.
 class ManagerSigninView(ObtainAuthToken):
@@ -311,6 +311,8 @@ class ManagerCommentsView(APIView):
     def get(self, req, paper):
         paper = ResearchPaper.objects.get(Research_Paper_name=paper)
         comments = Comments.objects.filter(ResearchPaper=paper)
+        sort = req.GET.get('sort')
+        print(sort)
 
         def get_nested_comments(comment):
             nested_comments = []
@@ -345,6 +347,13 @@ class ManagerCommentsView(APIView):
                 'personal': comment.User == req.user,
                 'children': get_nested_comments(comment)
             })
+
+        if sort == 'likes':
+            top_level_comments = sorted(top_level_comments, key=itemgetter('likes'), reverse=True)
+        elif sort == 'dislikes':
+            top_level_comments = sorted(top_level_comments, key=itemgetter('unlikes'), reverse=True)
+        elif sort == 'reputation':
+            top_level_comments = sorted(top_level_comments, key=itemgetter('id'), reverse=True)
 
         return JsonResponse(top_level_comments, content_type='application/json', safe=False)
 
@@ -429,10 +438,15 @@ class ManagerCommentLikeView(APIView):
                 
                 try:
                     rank = Rank.objects.get(user=user)
+                    print(comment.Author)
+                    print(rank)
                     if comment.Author == user:
+                        print("Hello")
                         rank.rank += 5
                     else:
+                        print("Hello2")
                         rank.rank += 1
+                    
                     rank.save()
                 except:
                     pass
@@ -441,10 +455,7 @@ class ManagerCommentLikeView(APIView):
                 notification.save()
                 
 
-                likes = Like.objects.filter(post=comment, value='Like').count()
-                unlikes = Like.objects.filter(post=comment, value='Unlike').count()
-                data = {'likes': likes, 'unlikes': unlikes}
-                return Response({'success': 'Comment liked successfully.', 'data': data})
+                return Response({'success': 'Comment liked successfully.'})
         elif data == 'unlike':
             comment = Comments.objects.get(id=comment)
             # check if user already liked the comment
@@ -462,25 +473,11 @@ class ManagerCommentLikeView(APIView):
                 unlike = Like.objects.create(user=user, post=comment, value='Unlike')
                 unlike.save()
 
-                try:
-                    rank = Rank.objects.get(user=user)
-                    if comment.Author == user:
-                        rank.rank -= 5
-                    else:
-                        rank.rank -= 1
-                    rank.save()
-                except:
-                    pass
-
                 notification = Notifications.objects.create(user=comment.User, message=f'{user.username} disliked your comment.', link=f'/venues/{comment.ResearchPaper.Venue}/{comment.ResearchPaper.Research_Paper_name}')
                 notification.save()
                                                             
 
-
-                likes = Like.objects.filter(post=comment, value='Like').count()
-                unlikes = Like.objects.filter(post=comment, value='Unlike').count()
-                data = {'likes': likes, 'unlikes': unlikes}
-                return Response({'success': 'Comment liked successfully.', 'data': data})
+                return Response({'success': 'Comment liked successfully.'})
 
 
 class ManagerChatView(APIView):

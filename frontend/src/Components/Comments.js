@@ -58,6 +58,18 @@ export default function Comments(props){
         .catch(err => console.log(err))
     };
 
+    const handleSorting = (e, type) => {
+      e.preventDefault();
+      let URL = `http://127.0.0.1:8000/paper/${props.paper}/comments?sort=${type}`;
+      axios.get(URL, {
+        headers: { Authorization: `Token ${localStorage.getItem('token')}` },
+      })
+          .then(res => {
+            setComments(res.data)
+          })
+          .catch(err => console.log(err))
+    }
+
     const handleEdit = (e, id, comment) => {
       e.preventDefault();
       setEdit(id);
@@ -98,7 +110,21 @@ export default function Comments(props){
     return(
       <section className="vh-100">
         <h1 style={{marginTop: '4rem', textAlign: 'center'}}>Reviews</h1>
-      <MDBContainer className="py-5" style={{ maxWidth: "2000px" }}>
+        <MDBRow className='justify-content-center'>
+        <MDBCol md="1" lg="1" xl="1">
+        <MDBDropdown >
+          <MDBDropdownToggle tag='a' className='nav-link' role='button'>
+            Sorting
+          </MDBDropdownToggle>
+          <MDBDropdownMenu>
+            <MDBDropdownItem onClick={e => handleSorting(e, 'likes')} link>Sort by likes</MDBDropdownItem>
+            <MDBDropdownItem onClick={e => handleSorting(e, 'dislikes')} link>Sort by dislikes</MDBDropdownItem>
+            <MDBDropdownItem onClick={e => handleSorting(e, 'reputation')} link>Sort by Reputation</MDBDropdownItem>
+          </MDBDropdownMenu>
+        </MDBDropdown>
+        </MDBCol>
+        </MDBRow>
+      <MDBContainer className="py-5" style={{ maxWidth: "4000px" }}>
         {comments.map((comment) => (
         <MDBRow className="justify-content-center" key={comment.id}>
           <MDBCol md="11" lg="9" xl="7">
@@ -124,6 +150,19 @@ export default function Comments(props){
                           <MDBIcon fas icon="thumbs-down me-1" />
                           {comment.unlikes}
                         </a>
+                        { comment.personal ? 
+                         <MDBDropdown>
+                         <MDBDropdownToggle tag='a' className='nav-link' role='button'>
+                           More
+                         </MDBDropdownToggle>
+                         <MDBDropdownMenu>
+                            <MDBDropdownItem onClick={e => handleEdit(e, comment.id, comment.comment)} link>Edit</MDBDropdownItem>
+                            <MDBDropdownItem link>Delete</MDBDropdownItem>
+                         </MDBDropdownMenu>
+                       </MDBDropdown>
+
+                        : null
+                        }
                       </div>
                       <a onClick={e => handleParent(e, comment.id)} className="link-muted">
                         <MDBIcon fas icon="reply me-1" /> Reply
@@ -156,13 +195,16 @@ export default function Comments(props){
                           {child.unlikes}
                         </a>
                         { child.personal ? 
-                        <MDBDropdown className='m-2'>
-                          <MDBDropdownToggle>...</MDBDropdownToggle>
-                          <MDBDropdownMenu>
+                         <MDBDropdown>
+                         <MDBDropdownToggle tag='a' className='nav-link' role='button'>
+                           More
+                         </MDBDropdownToggle>
+                         <MDBDropdownMenu>
                             <MDBDropdownItem onClick={e => handleEdit(e, child.id, child.comment)} link>Edit</MDBDropdownItem>
                             <MDBDropdownItem link>Delete</MDBDropdownItem>
-                          </MDBDropdownMenu>
-                        </MDBDropdown>
+                         </MDBDropdownMenu>
+                       </MDBDropdown>
+
                         : null
                         }
                       </div>

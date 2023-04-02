@@ -38,7 +38,7 @@ export default function SubmitPaper() {
         })
             .then(res => {
               console.log(res.data);
-              navigate('/')
+              navigate(`/venues/${Venue_name.replace(/ /g, "_")}`);
             })
             .catch(err => console.log(err))
         };

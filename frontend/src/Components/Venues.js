@@ -17,6 +17,10 @@ export default function Venues() {
         setVenues(data.venues);
       };
       fetchVenues();
+      for (let i = 0; i < venues.length; i++) {
+        console.log("Hello");
+        console.log(venues[i].Venue_name.replace('_', ' '));
+      }
     }, []);
     
 

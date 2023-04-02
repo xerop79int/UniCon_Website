@@ -17,6 +17,7 @@ from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from operator import itemgetter
+from django.db.models import Q
 
 # Create your views here.
 class ManagerSigninView(ObtainAuthToken):
@@ -187,6 +188,7 @@ class ManagerSingleVenueView(APIView):
     def get(self, req, venue):
         try:
             venue = Venue.objects.get(Venue_name=venue)
+            venue.Venue_name = venue.Venue_name.replace("_", " ")
             venue_dict = serializers.serialize('python', [venue])[0]['fields']
             return JsonResponse(venue_dict, content_type='application/json', safe=False)
         except Venue.DoesNotExist:
@@ -205,17 +207,27 @@ class ManagerResearchPaperView(APIView):
         authors = req.data.get('authors')
         code = req.data.get('code')
 
-        title = title.replace(" ", "_")
+        venue = venue.replace(" ", "_")
+
         # check if research paper already exists and if not create a new research paper
 
         try:
+            venue = Venue.objects.get(Venue_name=venue)
             research = ResearchPaper.objects.get(Research_Paper_name=title, Venue=venue)
             return Response({'error': 'Research Paper already exists.'})
         except ResearchPaper.DoesNotExist:
             venue = Venue.objects.get(Venue_name=venue)
             research = ResearchPaper.objects.create(Venue=venue, Research_Paper_name=title, Code=code, Abstract=abstract, Research_Paper_file=pdf)
-            research.Authors.set(user)
-            research.Authors.set(authors)
+            Author.objects.create(User=user, ResearchPaper=research)
+            Authors = authors.split(',')
+            for author in Authors:
+                author = author.strip()
+                try:
+                    user = User.objects.get(email=author)
+                    Author.objects.create(User=user, ResearchPaper=research)
+                except User.DoesNotExist:
+                    pass
+
             research.save()
 
             # send a notification to all the users who are following the venue
@@ -437,15 +449,14 @@ class ManagerCommentLikeView(APIView):
                 
                 try:
                     rank = Rank.objects.get(user=user)
-                    print(comment.Author)
-                    print(rank)
-                    if comment.Author == user:
-                        print("Hello")
-                        rank.rank += 5
-                    else:
-                        print("Hello2")
-                        rank.rank += 1
-                    
+                    # print(comment.Author)
+                    # print(rank)
+                    # if comment.Author == user:
+                    #     print("Hello")
+                    #     rank.rank += 5
+                    # else:
+                    #     print("Hello2")
+                    rank.rank += 1
                     rank.save()
                 except:
                     pass
@@ -575,6 +586,32 @@ class ManagerSubscribeView(APIView):
             subscribe = Subscribe.objects.create(user=user)
             subscribe.save()
             return Response({'success': 'Subscribed successfully.'})
+
+class ManagerSearchView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, req):
+        query = req.GET.get('s')
+        papers = ResearchPaper.objects.filter(Q(Research_Paper_name__icontains=query))
+        data = {'papers': []}
+        for paper in papers:
+            data['papers'].append({
+                'id': paper.id,
+                'name': paper.Research_Paper_name,
+                'venue': paper.Venue.Venue_name
+            })
+        
+        print(data)
+        return JsonResponse(data, content_type='application/json')
+
+class ManagerLogoutView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, req):
+        req.user.auth_token.delete()
+        return Response({'success': 'Logged out successfully.'})
 
     # def get(self, req, venue):
     #     user = req.user

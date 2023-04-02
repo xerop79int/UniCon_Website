@@ -18,4 +18,6 @@ urlpatterns = [
     path('chat/<str:paper>/messages', ManagerChatView.as_view()),
     path('subscribe/<str:venue>', ManagerSubscribeView.as_view()),
     path('notifications', ManagerNotificationsView.as_view()),
+    path('search', ManagerSearchView.as_view()),
+    path('logout', ManagerLogoutView.as_view()),
 ]

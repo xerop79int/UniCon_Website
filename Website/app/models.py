@@ -33,7 +33,6 @@ class OfficialReviwer(models.Model):
 class ResearchPaper(models.Model):
     Venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
     Research_Paper_name = models.CharField(max_length=300)
-    Authors = models.ManyToManyField(User, related_name='Authors', blank=True)
     Research_Paper_file = models.FileField(upload_to='uploads/', null=True, blank=True)
     Isapproved = models.BooleanField(default=False)
     Public_date = models.DateTimeField(auto_now_add=True, null=True)
@@ -48,6 +47,13 @@ class ResearchPaper(models.Model):
 
     def __str__(self) -> str:
         return self.Research_Paper_name
+
+class Author(models.Model):
+    ResearchPaper = models.ForeignKey(ResearchPaper, on_delete=models.CASCADE)
+    User = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.User.username
     
 class Comments(models.Model):
     ResearchPaper = models.ForeignKey(ResearchPaper, on_delete=models.CASCADE)

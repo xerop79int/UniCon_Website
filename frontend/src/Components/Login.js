@@ -12,6 +12,8 @@ import {
 from 'mdb-react-ui-kit';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
+import DesktopNavbar from './Desktop_Navbar';
 
 function Login() {
     
@@ -44,6 +46,12 @@ function Login() {
     }
 
   return (
+    <div>
+      {window.innerWidth > 768 ? (
+        <DesktopNavbar />
+        ) : (
+    <Navbar />
+    )}
     <div className="LoginContainer">
     <MDBContainer fluid className='p-4 background-radial-gradient overflow-hidden'>
 
@@ -97,6 +105,7 @@ function Login() {
       </MDBRow>
 
     </MDBContainer>
+    </div>
     </div>
   );
 }

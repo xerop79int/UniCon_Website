@@ -8,6 +8,7 @@ import {
 } from 'mdb-react-ui-kit';
 import Comments from './Comments';
 import Navbar from './Navbar';
+import DesktopNavbar from './Desktop_Navbar';
 import './ResearchPaper.css'
 
 function ResearchPaper() {
@@ -30,7 +31,11 @@ function ResearchPaper() {
   
   return (
     <div>
+    {window.innerWidth > 768 ? (
+        <DesktopNavbar />
+        ) : (
     <Navbar />
+    )}
     <div className='container-fluid' style={{padding: 0, margin: 0}}>
       <div id="intro" className="bg-image h-50 shadow-1-strong">
 

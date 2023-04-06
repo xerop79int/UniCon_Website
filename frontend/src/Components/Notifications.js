@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MDBBadge, MDBTable, MDBTableHead, MDBTableBody, MDBContainer } from 'mdb-react-ui-kit';
 import Navbar from './Navbar';
+import DesktopNavbar from './Desktop_Navbar';
 
 export default function Notifications() {
     const [notifications, setNotifications] = useState([]);
@@ -24,7 +25,11 @@ export default function Notifications() {
 
   return (
     <div>
+    {window.innerWidth > 768 ? (
+        <DesktopNavbar />
+        ) : (
     <Navbar />
+    )}
     <MDBContainer>
     <MDBTable align='middle'>
       <MDBTableHead>

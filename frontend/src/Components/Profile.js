@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import "./Profile.css";
 import { MDBCol, MDBContainer, MDBBtn, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBTypography, MDBIcon } from 'mdb-react-ui-kit';
+import Navbar from './Navbar';
+import DesktopNavbar from './Desktop_Navbar';
 
 export default function PersonalProfile() {
   const { username } = useParams();
@@ -22,6 +24,12 @@ export default function PersonalProfile() {
 
 
   return (
+    <div>
+      {window.innerWidth > 768 ? (
+        <DesktopNavbar />
+        ) : (
+    <Navbar />
+    )}
     <section className="vh-100" style={{ backgroundColor: '#f4f5f7' }}>
       <MDBContainer className="py-5 h-100">
         <MDBRow className="justify-content-center align-items-center h-100">
@@ -74,5 +82,6 @@ export default function PersonalProfile() {
         </MDBRow>
       </MDBContainer>
     </section>
+    </div>
   );
 }

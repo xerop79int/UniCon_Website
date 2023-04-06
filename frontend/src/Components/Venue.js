@@ -8,6 +8,7 @@ import {
 } from 'mdb-react-ui-kit';
 import { MDBBadge, MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
 import Navbar from './Navbar';
+import DesktopNavbar from './Desktop_Navbar';
 import axios from 'axios';
 
 function Venue() {
@@ -56,7 +57,11 @@ function Venue() {
   
   return (
     <div>
-      <Navbar />
+      {window.innerWidth > 768 ? (
+        <DesktopNavbar />
+        ) : (
+    <Navbar />
+    )}
     <div className='container-fluid' style={{padding: 0, margin: 0}}>
       <div id="intro" class="bg-image h-50 shadow-1-strong">
 

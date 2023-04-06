@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 import {
-  MDBContainer,
   MDBNavbar,
+  MDBContainer,
   MDBNavbarBrand,
   MDBNavbarToggler,
-  MDBIcon,
-  MDBNavbarNav,
   MDBNavbarItem,
   MDBNavbarLink,
+  MDBCollapse,
   MDBBtn,
+  MDBIcon,
+  MDBNavbarNav,
+  MDBInputGroup,
   MDBDropdown,
   MDBDropdownToggle,
   MDBDropdownMenu,
-  MDBDropdownItem,
-  MDBCollapse,
+  MDBDropdownItem
 } from 'mdb-react-ui-kit';
 
 export default function Navbar() {
-  const [showBasic, setShowBasic] = useState(false);
+  const [showNav, setShowNav] = useState(false);
   const [search, setSearch] = useState("");
 
   let login = localStorage.getItem('token') ? true : false;
@@ -40,27 +41,26 @@ export default function Navbar() {
   
 
   let username = "";
-
   return (
-    <MDBNavbar expand='lg' light bgColor='light'>
-      <MDBContainer fluid>
-        <MDBNavbarBrand href='/'>Sci-commons</MDBNavbarBrand>
-
-        <MDBNavbarToggler
-          aria-controls='navbarSupportedContent'
+    <>
+      <MDBNavbar expand='lg' light bgColor='light'>
+        <MDBContainer>
+          <MDBNavbarBrand href='/'>Sci-commons</MDBNavbarBrand>
+          <MDBNavbarToggler
+          type='button'
           aria-expanded='false'
           aria-label='Toggle navigation'
-          onClick={() => setShowBasic(!showBasic)}
+          onClick={() => setShowNav(!showNav)}
         >
           <MDBIcon icon='bars' fas />
         </MDBNavbarToggler>
-
-        <MDBCollapse navbar show={showBasic}>
-          <div className='d-flex input-group w-auto'>
-            <input onChange={e => setSearch(e.target.value)} type='search' className='form-control' placeholder='Type query' aria-label='Search' />
-            <MDBBtn onClick={handleSearch} color='primary'>Search</MDBBtn>
-          </div>
-          <MDBNavbarNav className='mr-auto mb-2 mb-lg-0'>
+          <MDBCollapse style={{marginLeft:"20rem"}} className='d-flex justify-content-between' navbar show={showNav}>
+            <MDBInputGroup tag="form" className='pt-3 d-flex w-auto mb-3'>
+              <input className='form-control' onChange={e => setSearch(e.target.value)} placeholder="Type query" aria-label="Search" type='Search' />
+              <MDBBtn onClick={handleSearch}>Search</MDBBtn>
+            </MDBInputGroup>
+            <div className='w-10'>
+            <MDBNavbarNav className='mr-auto mb-2 mb-lg-0'>
               <MDBNavbarItem>
                 <MDBNavbarLink active aria-current='page' href='/notifications'>
                   Notifications
@@ -87,9 +87,13 @@ export default function Navbar() {
             </MDBNavbarItem>
             </MDBNavbarNav>
 
+            
+            </div>
+            
+          </MDBCollapse>
           
-        </MDBCollapse>
-      </MDBContainer>
-    </MDBNavbar>
+        </MDBContainer>
+      </MDBNavbar>
+    </>
   );
 }
